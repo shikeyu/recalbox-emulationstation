@@ -204,6 +204,8 @@ set(ES_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/src/pugiXML/pugiconfig.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/pugiXML/pugixml.hpp
 
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/sqlite/sqlite3.h
+
 	${CMAKE_CURRENT_SOURCE_DIR}/src/nanosvg/nanosvg.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/nanosvg/nanosvgrast.h
 
@@ -290,6 +292,8 @@ set(ES_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/scrapers/TheArchiveScraper.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/src/pugiXML/pugixml.cpp
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/sqlite/sqlite3.c
     
     ${CMAKE_CURRENT_SOURCE_DIR}/src/nanosvg/nanosvg_impl.cpp
     

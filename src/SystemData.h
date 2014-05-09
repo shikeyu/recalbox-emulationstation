@@ -24,7 +24,7 @@ public:
 	inline PlatformIds::PlatformId getPlatformId() const { return mPlatformId; }
 	inline const std::shared_ptr<ThemeData>& getTheme() const { return mTheme; }
 
-	std::string getGamelistPath(bool forWrite) const;
+	std::string getGamelistPath(bool forWrite, const char* extension = ".xml") const;
 	bool hasGamelist() const;
 	std::string getThemePath() const;
 	

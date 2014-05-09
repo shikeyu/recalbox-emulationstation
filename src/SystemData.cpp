@@ -338,21 +338,24 @@ std::string SystemData::getConfigPath(bool forWrite)
 	return "/etc/emulationstation/es_systems.cfg";
 }
 
-std::string SystemData::getGamelistPath(bool forWrite) const
+std::string SystemData::getGamelistPath(bool forWrite, const char* extension) const
 {
 	fs::path filePath;
 
-	filePath = mRootFolder->getPath() / "gamelist.xml";
+	std::string filename = "gamelist";
+	filename += extension;
+
+	filePath = mRootFolder->getPath() / filename;
 	if(fs::exists(filePath))
 		return filePath.generic_string();
 
-	filePath = getHomePath() + "/.emulationstation/gamelists/" + mName + "/gamelist.xml";
+	filePath = getHomePath() + "/.emulationstation/gamelists/" + mName + "/" + filename;
 	if(forWrite) // make sure the directory exists if we're going to write to it, or crashes will happen
 		fs::create_directories(filePath.parent_path());
 	if(forWrite || fs::exists(filePath))
 		return filePath.generic_string();
 
-	return "/etc/emulationstation/gamelists/" + mName + "/gamelist.xml";
+	return "/etc/emulationstation/gamelists/" + mName + "/" + filename;
 }
 
 std::string SystemData::getThemePath() const
