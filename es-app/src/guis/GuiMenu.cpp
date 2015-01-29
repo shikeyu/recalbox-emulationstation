@@ -100,40 +100,40 @@ GuiMenu::GuiMenu(Window* window) : GuiComponent(window), mMenu(window, "MAIN MEN
                         mWindow->pushGui(s);
 
 	});
-	auto openScrapeNow = [this] { mWindow->pushGui(new GuiScraperStart(mWindow)); };
-	addEntry("SCRAPER", 0x777777FF, true, 
-		[this, openScrapeNow] { 
-			auto s = new GuiSettings(mWindow, "SCRAPER");
-
-			// scrape from
-			auto scraper_list = std::make_shared< OptionListComponent< std::string > >(mWindow, "SCRAPE FROM", false);
-			std::vector<std::string> scrapers = getScraperList();
-			for(auto it = scrapers.begin(); it != scrapers.end(); it++)
-				scraper_list->add(*it, *it, *it == Settings::getInstance()->getString("Scraper"));
-
-			s->addWithLabel("SCRAPE FROM", scraper_list);
-			s->addSaveFunc([scraper_list] { Settings::getInstance()->setString("Scraper", scraper_list->getSelected()); });
-
-			// scrape ratings
-			auto scrape_ratings = std::make_shared<SwitchComponent>(mWindow);
-			scrape_ratings->setState(Settings::getInstance()->getBool("ScrapeRatings"));
-			s->addWithLabel("SCRAPE RATINGS", scrape_ratings);
-			s->addSaveFunc([scrape_ratings] { Settings::getInstance()->setBool("ScrapeRatings", scrape_ratings->getState()); });
-
-			// scrape now
-			ComponentListRow row;
-			std::function<void()> openAndSave = openScrapeNow;
-			openAndSave = [s, openAndSave] { s->save(); openAndSave(); };
-			row.makeAcceptInputHandler(openAndSave);
-
-			auto scrape_now = std::make_shared<TextComponent>(mWindow, "SCRAPE NOW", Font::get(FONT_SIZE_MEDIUM), 0x777777FF);
-			auto bracket = makeArrow(mWindow);
-			row.addElement(scrape_now, true);
-			row.addElement(bracket, false);
-			s->addRow(row);
-
-			mWindow->pushGui(s);
-	});
+//	auto openScrapeNow = [this] { mWindow->pushGui(new GuiScraperStart(mWindow)); };
+//	addEntry("SCRAPER", 0x777777FF, true, 
+//		[this, openScrapeNow] { 
+//			auto s = new GuiSettings(mWindow, "SCRAPER");
+//
+//			// scrape from
+//			auto scraper_list = std::make_shared< OptionListComponent< std::string > >(mWindow, "SCRAPE FROM", false);
+//			std::vector<std::string> scrapers = getScraperList();
+//			for(auto it = scrapers.begin(); it != scrapers.end(); it++)
+//				scraper_list->add(*it, *it, *it == Settings::getInstance()->getString("Scraper"));
+//
+//			s->addWithLabel("SCRAPE FROM", scraper_list);
+//			s->addSaveFunc([scraper_list] { Settings::getInstance()->setString("Scraper", scraper_list->getSelected()); });
+//
+//			// scrape ratings
+//			auto scrape_ratings = std::make_shared<SwitchComponent>(mWindow);
+//			scrape_ratings->setState(Settings::getInstance()->getBool("ScrapeRatings"));
+//			s->addWithLabel("SCRAPE RATINGS", scrape_ratings);
+//			s->addSaveFunc([scrape_ratings] { Settings::getInstance()->setBool("ScrapeRatings", scrape_ratings->getState()); });
+//
+//			// scrape now
+//			ComponentListRow row;
+//			std::function<void()> openAndSave = openScrapeNow;
+//			openAndSave = [s, openAndSave] { s->save(); openAndSave(); };
+//			row.makeAcceptInputHandler(openAndSave);
+//
+//			auto scrape_now = std::make_shared<TextComponent>(mWindow, "SCRAPE NOW", Font::get(FONT_SIZE_MEDIUM), 0x777777FF);
+//			auto bracket = makeArrow(mWindow);
+//			row.addElement(scrape_now, true);
+//			row.addElement(bracket, false);
+//			s->addRow(row);
+//
+//			mWindow->pushGui(s);
+//	});
 
 	addEntry("SOUND SETTINGS", 0x777777FF, true, 
 		[this] {
@@ -253,43 +253,43 @@ GuiMenu::GuiMenu(Window* window) : GuiComponent(window), mMenu(window, "MAIN MEN
 	});
 
             // TODO refactoring
-        addEntry("CONFIGURE INPUT", 0x777777FF, true, [this] { this->createConfigInput(); });
+//        addEntry("CONFIGURE INPUT", 0x777777FF, true, [this] { this->createConfigInput(); });
                 
                 
-	addEntry("UPDATE", 0x777777FF, true, 
-		    [this] {
-		         Window* window = mWindow;
-		        auto s = new GuiUpdate(window);
-		        window->pushGui(s);
-	});
+//	addEntry("UPDATE", 0x777777FF, true, 
+//		    [this] {
+//		         Window* window = mWindow;
+//		        auto s = new GuiUpdate(window);
+//		        window->pushGui(s);
+//	});
         
-        addEntry("LANGUAGE", 0x777777FF, true, 
-		    [this] {
-                        Window* window = mWindow;
-			auto s = new GuiSettings(window, "LANGUAGE");
-			// language choice 
-			auto language_choice = std::make_shared< OptionListComponent<std::string> >(window, "LANGUAGE", false);
-                        language_choice->add("Français", "fr_FR", Settings::getInstance()->getString("Lang") == "fr_FR");
-                        language_choice->add("English", "en_US", Settings::getInstance()->getString("Lang") == "en_US");
-                        language_choice->add("Portugues", "pt_BR", Settings::getInstance()->getString("Lang") == "pt_BR");
-                        language_choice->add("Español", "es_ES", Settings::getInstance()->getString("Lang") == "es_ES");
-                        s->addWithLabel("LANGUAGE", language_choice);
-			s->addSaveFunc([language_choice, window] {
-                            if(Settings::getInstance()->getString("Lang") == language_choice->getSelected()){
-                                return;
-                            }
-                            Settings::getInstance()->setString("Lang", language_choice->getSelected()); 
-                            window->pushGui(
-                               new GuiMsgBox(window, "THE SYSTEM WILL NOW REBOOT", "OK", 
-                               [] {
-                                   if(runRestartCommand() != 0)
-                                       LOG(LogWarning) << "Reboot terminated with non-zero result!";
-                               })
-                            );
-                        });
-                        mWindow->pushGui(s);
-
-	});
+//        addEntry("LANGUAGE", 0x777777FF, true, 
+//		    [this] {
+//                        Window* window = mWindow;
+//			auto s = new GuiSettings(window, "LANGUAGE");
+//			// language choice 
+//			auto language_choice = std::make_shared< OptionListComponent<std::string> >(window, "LANGUAGE", false);
+//                        language_choice->add("Français", "fr_FR", Settings::getInstance()->getString("Lang") == "fr_FR");
+//                        language_choice->add("English", "en_US", Settings::getInstance()->getString("Lang") == "en_US");
+//                        language_choice->add("Portugues", "pt_BR", Settings::getInstance()->getString("Lang") == "pt_BR");
+//                        language_choice->add("Español", "es_ES", Settings::getInstance()->getString("Lang") == "es_ES");
+//                        s->addWithLabel("LANGUAGE", language_choice);
+//			s->addSaveFunc([language_choice, window] {
+//                            if(Settings::getInstance()->getString("Lang") == language_choice->getSelected()){
+//                                return;
+//                            }
+//                            Settings::getInstance()->setString("Lang", language_choice->getSelected()); 
+//                            window->pushGui(
+//                               new GuiMsgBox(window, "THE SYSTEM WILL NOW REBOOT", "OK", 
+//                               [] {
+//                                   if(runRestartCommand() != 0)
+//                                       LOG(LogWarning) << "Reboot terminated with non-zero result!";
+//                               })
+//                            );
+//                        });
+//                        mWindow->pushGui(s);
+//
+//	});
         
 	addEntry("QUIT", 0x777777FF, true, 
 		[this] {
