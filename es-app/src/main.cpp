@@ -299,16 +299,16 @@ int main(int argc, char* argv[])
         
         
         // UPDATED VERSION MESSAGE
-        if(RetroboxSystem::getInstance()->needToShowVersionMessage()){
-             window.pushGui(new GuiMsgBox(&window,
-			RetroboxSystem::getInstance()->getVersionMessage(),
-			"OK", [] { 
-                            RetroboxSystem::getInstance()->versionMessageDisplayed();
-                        },"",nullptr,"",nullptr, ALIGN_LEFT));
-        }
+//        if(RetroboxSystem::getInstance()->needToShowVersionMessage()){
+//             window.pushGui(new GuiMsgBox(&window,
+//			RetroboxSystem::getInstance()->getVersionMessage(),
+//			"OK", [] { 
+//                            RetroboxSystem::getInstance()->versionMessageDisplayed();
+//                        },"",nullptr,"",nullptr, ALIGN_LEFT));
+//        }
         
         // UPDATE CHECK THREAD
-        NetworkThread * nthread = new NetworkThread(&window);
+        //NetworkThread * nthread = new NetworkThread(&window);
 
 	//run the command line scraper then quit
 	if(scrape_cmdline)
