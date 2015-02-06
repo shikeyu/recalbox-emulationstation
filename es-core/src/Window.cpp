@@ -7,6 +7,7 @@
 #include <iomanip>
 #include "components/HelpComponent.h"
 #include "components/ImageComponent.h"
+#include "guis/GuiMsgBox.h"
 
 Window::Window() : mNormalizeNextUpdate(false), mFrameTimeElapsed(0), mFrameCountElapsed(0), mAverageDeltaTime(10), 
 	mAllowSleep(true), mSleeping(false), mTimeSinceLastInput(0)
@@ -31,6 +32,11 @@ void Window::pushGui(GuiComponent* gui)
 {
 	mGuiStack.push_back(gui);
 	gui->updateHelpPrompts();
+}
+
+void Window::displayMessage(std::string message)
+{
+    mMessages.push_back(message);
 }
 
 void Window::removeGui(GuiComponent* gui)
@@ -131,6 +137,12 @@ void Window::input(InputConfig* config, Input input)
 
 void Window::update(int deltaTime)
 {
+    
+        if(!mMessages.empty()){
+		std::string message = mMessages.back();
+		mMessages.pop_back();
+                pushGui(new GuiMsgBox(this, message));
+	}
 	if(mNormalizeNextUpdate)
 	{
 		mNormalizeNextUpdate = false;

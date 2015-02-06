@@ -15,11 +15,15 @@
 #include "Log.h"
 #include "Window.h"
 #include "EmulationStation.h"
+#include "RetroboxSystem.h"
 #include "Settings.h"
 #include "ScraperCmdLine.h"
 #include "VolumeControl.h"
 #include <sstream>
 #include <boost/locale.hpp>
+#include "resources/Font.h"
+#include "NetworkThread.h"
+
 
 
 #ifdef WIN32
@@ -292,6 +296,19 @@ int main(int argc, char* argv[])
 				SDL_PushEvent(quit);
 			}));
 	}
+        
+        
+        // UPDATED VERSION MESSAGE
+        if(RetroboxSystem::getInstance()->needToShowVersionMessage()){
+             window.pushGui(new GuiMsgBox(&window,
+			RetroboxSystem::getInstance()->getVersionMessage(),
+			"OK", [] { 
+                            RetroboxSystem::getInstance()->versionMessageDisplayed();
+                        },"",nullptr,"",nullptr, ALIGN_LEFT));
+        }
+        
+        // UPDATE CHECK THREAD
+        NetworkThread * nthread = new NetworkThread(&window);
 
 	//run the command line scraper then quit
 	if(scrape_cmdline)

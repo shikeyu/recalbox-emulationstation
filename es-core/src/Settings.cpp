@@ -72,6 +72,7 @@ void Settings::setDefaults()
 	mIntMap["ScreenSaverTime"] = 5*60*1000; // 5 minutes
 	mIntMap["ScraperResizeWidth"] = 400;
 	mIntMap["ScraperResizeHeight"] = 0;
+	mIntMap["SystemVolume"] = 96;
 
 	mStringMap["TransitionStyle"] = "fade";
 	mStringMap["ThemeSet"] = "";
@@ -89,6 +90,8 @@ void Settings::setDefaults()
         mStringMap["AudioOutputDevice"] = "auto";
         mStringMap["Overclock"] = "extrem";
         mStringMap["RecalboxSettingScript"] = "/recalbox/scripts/recalbox-config.sh";
+	mStringMap["LastVersionFile"] = "/root/update.done";
+	mStringMap["VersionMessage"] = "/recalbox/recalbox.msg";
 
         
 
