@@ -60,9 +60,9 @@ GuiMenu::GuiMenu(Window* window) : GuiComponent(window), mMenu(window, "MAIN MEN
 //                        s->addWithLabel("OVERCLOCK", overclock_choice);
 //                        
 //                        // overscan
-//			auto overscan_enabled = std::make_shared<SwitchComponent>(mWindow);
-//			overscan_enabled->setState(Settings::getInstance()->getBool("Overscan"));
-//			s->addWithLabel("OVERSCAN", overscan_enabled);
+			auto overscan_enabled = std::make_shared<SwitchComponent>(mWindow);
+			overscan_enabled->setState(Settings::getInstance()->getBool("Overscan"));
+			s->addWithLabel("OVERSCAN", overscan_enabled);
                         
                         // smoothing
 			auto smoothing_enabled = std::make_shared<SwitchComponent>(mWindow);
