@@ -51,14 +51,14 @@ GuiMenu::GuiMenu(Window* window) : GuiComponent(window), mMenu(window, "MAIN MEN
                         s->addWithLabel("STORAGE", space);
                         
                         // Overclock choice 
-			auto overclock_choice = std::make_shared< OptionListComponent<std::string> >(window, "OVERCLOCK", false);
+/*			auto overclock_choice = std::make_shared< OptionListComponent<std::string> >(window, "OVERCLOCK", false);
                         std::string currentOverclock = Settings::getInstance()->getString("Overclock");
                         overclock_choice->add("EXTREM", "extrem", currentOverclock == "extrem");
                         overclock_choice->add("TURBO", "turbo", currentOverclock == "turbo");
                         overclock_choice->add("HIGH", "high", currentOverclock == "high");
                         overclock_choice->add("NONE", "none", currentOverclock == "none");
                         s->addWithLabel("OVERCLOCK", overclock_choice);
-                        
+                        */
                         // overscan
 			auto overscan_enabled = std::make_shared<SwitchComponent>(mWindow);
 			overscan_enabled->setState(Settings::getInstance()->getBool("Overscan"));
@@ -70,7 +70,7 @@ GuiMenu::GuiMenu(Window* window) : GuiComponent(window), mMenu(window, "MAIN MEN
 			s->addWithLabel("SMOOTH GAMES", smoothing_enabled);
 			
                         
-                        s->addSaveFunc([overscan_enabled,smoothing_enabled ,overclock_choice, window] { 
+                        s->addSaveFunc([overscan_enabled,smoothing_enabled , window] { 
                             bool reboot = false;
                             if(Settings::getInstance()->getBool("Smooth") != smoothing_enabled->getState()){
                                 Settings::getInstance()->setBool("Smooth", smoothing_enabled->getState()); 
@@ -81,11 +81,11 @@ GuiMenu::GuiMenu(Window* window) : GuiComponent(window), mMenu(window, "MAIN MEN
                                 reboot = true;
                             }
                             
-                            if(Settings::getInstance()->getString("Overclock") != overclock_choice->getSelected()){
+                            /*if(Settings::getInstance()->getString("Overclock") != overclock_choice->getSelected()){
                                 Settings::getInstance()->setString("Overclock", overclock_choice->getSelected()); 
                                 RetroboxSystem::getInstance()->setOverclock(overclock_choice->getSelected());
                                 reboot = true;
-                            }
+                            }*/
                             if(reboot){
                                 window->pushGui(
                                    new GuiMsgBox(window, "THE SYSTEM WILL NOW REBOOT", "OK", 
