@@ -265,35 +265,36 @@ GuiMenu::GuiMenu(Window* window) : GuiComponent(window), mMenu(window, "MAIN MEN
 //		        auto s = new GuiUpdate(window);
 //		        window->pushGui(s);
 //	});
-        
-//        addEntry("LANGUAGE", 0x777777FF, true, 
-//		    [this] {
-//                        Window* window = mWindow;
-//			auto s = new GuiSettings(window, "LANGUAGE");
-//			// language choice 
-//			auto language_choice = std::make_shared< OptionListComponent<std::string> >(window, "LANGUAGE", false);
-//                        language_choice->add("Français", "fr_FR", Settings::getInstance()->getString("Lang") == "fr_FR");
-//                        language_choice->add("English", "en_US", Settings::getInstance()->getString("Lang") == "en_US");
-//                        language_choice->add("Portugues", "pt_BR", Settings::getInstance()->getString("Lang") == "pt_BR");
-//                        language_choice->add("Español", "es_ES", Settings::getInstance()->getString("Lang") == "es_ES");
-//                        s->addWithLabel("LANGUAGE", language_choice);
-//			s->addSaveFunc([language_choice, window] {
-//                            if(Settings::getInstance()->getString("Lang") == language_choice->getSelected()){
-//                                return;
-//                            }
-//                            Settings::getInstance()->setString("Lang", language_choice->getSelected()); 
-//                            window->pushGui(
-//                               new GuiMsgBox(window, "THE SYSTEM WILL NOW REBOOT", "OK", 
-//                               [] {
-//                                   if(runRestartCommand() != 0)
-//                                       LOG(LogWarning) << "Reboot terminated with non-zero result!";
-//                               })
-//                            );
-//                        });
-//                        mWindow->pushGui(s);
-//
-//	});
-        
+/*        
+        addEntry("LANGUAGE", 0x777777FF, true, 
+		    [this] {
+                        Window* window = mWindow;
+			auto s = new GuiSettings(window, "LANGUAGE");
+			// language choice 
+			auto language_choice = std::make_shared< OptionListComponent<std::string> >(window, "LANGUAGE", false);
+                        language_choice->add("Français", "fr_FR", Settings::getInstance()->getString("Lang") == "fr_FR");
+                        language_choice->add("English", "en_US", Settings::getInstance()->getString("Lang") == "en_US");
+                        language_choice->add("Portugues", "pt_BR", Settings::getInstance()->getString("Lang") == "pt_BR");
+                        language_choice->add("Español", "es_ES", Settings::getInstance()->getString("Lang") == "es_ES");
+                        language_choice->add("Deutsch", "de_DE", Settings::getInstance()->getString("Lang") == "de_DE");
+                        s->addWithLabel("LANGUAGE", language_choice);
+			s->addSaveFunc([language_choice, window] {
+                            if(Settings::getInstance()->getString("Lang") == language_choice->getSelected()){
+                                return;
+                            }
+                            Settings::getInstance()->setString("Lang", language_choice->getSelected()); 
+                            window->pushGui(
+                               new GuiMsgBox(window, "THE SYSTEM WILL NOW REBOOT", "OK", 
+                               [] {
+                                   if(runRestartCommand() != 0)
+                                       LOG(LogWarning) << "Reboot terminated with non-zero result!";
+                               })
+                            );
+                        });
+                        mWindow->pushGui(s);
+
+	});
+*/        
 	addEntry("QUIT", 0x777777FF, true, 
 		[this] {
 			auto s = new GuiSettings(mWindow, "QUIT");
