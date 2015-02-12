@@ -46,9 +46,9 @@ GuiMenu::GuiMenu(Window* window) : GuiComponent(window), mMenu(window, "MAIN MEN
                         
                         auto version = std::make_shared<TextComponent>(mWindow, RetroboxSystem::getInstance()->getVersion(), Font::get(FONT_SIZE_MEDIUM), 0x777777FF);
                         s->addWithLabel("VERSION", version);
-                        bool warning = RetroboxSystem::getInstance()->isFreeSpaceLimit();
-                        auto space = std::make_shared<TextComponent>(mWindow, RetroboxSystem::getInstance()->getFreeSpaceInfo(), Font::get(FONT_SIZE_MEDIUM), warning ? 0xFF0000FF : 0x777777FF);
-                        s->addWithLabel("STORAGE", space);
+                        //bool warning = RetroboxSystem::getInstance()->isFreeSpaceLimit();
+                        //auto space = std::make_shared<TextComponent>(mWindow, RetroboxSystem::getInstance()->getFreeSpaceInfo(), Font::get(FONT_SIZE_MEDIUM), warning ? 0xFF0000FF : 0x777777FF);
+                        //s->addWithLabel("STORAGE", space);
                         
                         // Overclock choice 
 /*			auto overclock_choice = std::make_shared< OptionListComponent<std::string> >(window, "OVERCLOCK", false);
@@ -60,9 +60,9 @@ GuiMenu::GuiMenu(Window* window) : GuiComponent(window), mMenu(window, "MAIN MEN
                         s->addWithLabel("OVERCLOCK", overclock_choice);
                         */
                         // overscan
-			auto overscan_enabled = std::make_shared<SwitchComponent>(mWindow);
-			overscan_enabled->setState(Settings::getInstance()->getBool("Overscan"));
-			s->addWithLabel("OVERSCAN", overscan_enabled);
+			//auto overscan_enabled = std::make_shared<SwitchComponent>(mWindow);
+			//overscan_enabled->setState(Settings::getInstance()->getBool("Overscan"));
+			//s->addWithLabel("OVERSCAN", overscan_enabled);
                         
                         // smoothing
 			auto smoothing_enabled = std::make_shared<SwitchComponent>(mWindow);
@@ -70,16 +70,16 @@ GuiMenu::GuiMenu(Window* window) : GuiComponent(window), mMenu(window, "MAIN MEN
 			s->addWithLabel("SMOOTH GAMES", smoothing_enabled);
 			
                         
-                        s->addSaveFunc([overscan_enabled,smoothing_enabled , window] { 
+                        s->addSaveFunc([smoothing_enabled , window] { 
                             bool reboot = false;
                             if(Settings::getInstance()->getBool("Smooth") != smoothing_enabled->getState()){
                                 Settings::getInstance()->setBool("Smooth", smoothing_enabled->getState()); 
                             }
-                            if(Settings::getInstance()->getBool("Overscan") != overscan_enabled->getState()){
+                            /*if(Settings::getInstance()->getBool("Overscan") != overscan_enabled->getState()){
                                 Settings::getInstance()->setBool("Overscan", overscan_enabled->getState()); 
                                 RetroboxSystem::getInstance()->setOverscan(overscan_enabled->getState());
                                 reboot = true;
-                            }
+                            }*/
                             
                             /*if(Settings::getInstance()->getString("Overclock") != overclock_choice->getSelected()){
                                 Settings::getInstance()->setString("Overclock", overclock_choice->getSelected()); 
