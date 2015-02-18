@@ -131,21 +131,21 @@ void Window::input(InputConfig* config, Input input)
 	}
 	else
 	{
-            if(config->isMappedTo("x", input) && input.value && !launchKodi){
-                launchKodi = true;
-                Window * window = this;
-                this->pushGui(new GuiMsgBox(this, "DO YOU WANT TO START KODI MEDIA CENTER ?", "YES", 
-				[window, this] { 
-                                    if( ! RetroboxSystem::getInstance()->launchKodi(window))
-						LOG(LogWarning) << "Shutdown terminated with non-zero result!";
-                                    launchKodi = false;
-				}, "NO", [this] {
-                                    launchKodi = false;
-                                }));
-            }else {
+//            if(config->isMappedTo("x", input) && input.value && !launchKodi){
+//                launchKodi = true;
+//                Window * window = this;
+//                this->pushGui(new GuiMsgBox(this, "DO YOU WANT TO START KODI MEDIA CENTER ?", "YES", 
+//				[window, this] { 
+//                                    if( ! RetroboxSystem::getInstance()->launchKodi(window))
+//						LOG(LogWarning) << "Shutdown terminated with non-zero result!";
+//                                    launchKodi = false;
+//				}, "NO", [this] {
+//                                    launchKodi = false;
+//                                }));
+//            }else {
 		if(peekGui())
 			this->peekGui()->input(config, input);
-            }
+//            }
 	}
 }
 
