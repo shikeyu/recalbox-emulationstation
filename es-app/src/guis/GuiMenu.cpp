@@ -30,7 +30,7 @@
 
 #include "guis/GuiTextEditPopup.h"
 
-void GuiMenu::createInputTextRow(GuiSettings * gui, const char*  title, const char*  settingsID){
+void GuiMenu::createInputTextRow(GuiSettings * gui, const char*  title, const char*  settingsID, bool password){
     // LABEL
         Window * window = mWindow;
         ComponentListRow row;
@@ -40,7 +40,7 @@ void GuiMenu::createInputTextRow(GuiSettings * gui, const char*  title, const ch
 
         std::shared_ptr<GuiComponent> ed;
 
-        ed = std::make_shared<TextComponent>(window, Settings::getInstance()->getString(settingsID), Font::get(FONT_SIZE_MEDIUM, FONT_PATH_LIGHT), 0x777777FF, ALIGN_RIGHT);
+        ed = std::make_shared<TextComponent>(window, ((password && Settings::getInstance()->getString(settingsID) != "") ? "*********" : Settings::getInstance()->getString(settingsID) ), Font::get(FONT_SIZE_MEDIUM, FONT_PATH_LIGHT), 0x777777FF, ALIGN_RIGHT);
         row.addElement(ed, true);
 
         auto spacer = std::make_shared<GuiComponent>(mWindow);
@@ -52,12 +52,16 @@ void GuiMenu::createInputTextRow(GuiSettings * gui, const char*  title, const ch
         bracket->setResize(Eigen::Vector2f(0, lbl->getFont()->getLetterHeight()));
         row.addElement(bracket, false);
 
-        auto updateVal = [ed,settingsID](const std::string& newVal) { 
-            ed->setValue(newVal); 
+        auto updateVal = [ed,settingsID, password](const std::string& newVal) { 
+            if(!password)
+                ed->setValue(newVal); 
+            else {
+                ed->setValue("*********"); 
+            }
             Settings::getInstance()->setString(settingsID, newVal);
         }; // ok callback (apply new value to ed)
-        row.makeAcceptInputHandler([this, title, ed, updateVal] {
-                mWindow->pushGui(new GuiTextEditPopup(mWindow, title, ed->getValue(), updateVal, false));
+        row.makeAcceptInputHandler([this, title, updateVal,settingsID] {
+                mWindow->pushGui(new GuiTextEditPopup(mWindow, title, Settings::getInstance()->getString(settingsID), updateVal, false));
         });
         gui->addRow(row);
 }
