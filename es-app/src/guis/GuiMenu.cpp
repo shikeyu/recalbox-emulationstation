@@ -119,7 +119,7 @@ GuiMenu::GuiMenu(Window* window) : GuiComponent(window), mMenu(window, "MAIN MEN
 			s->addWithLabel("SMOOTH GAMES", smoothing_enabled);
 
 
-            s->addSaveFunc([overscan_enabled,smoothing_enabled ,overclock_choice, ratio_choice, window] {
+            s->addSaveFunc([overscan_enabled,smoothing_enabled , ratio_choice, window] {
                 bool reboot = false;
                 RecalboxSystem::getInstance()->setRecalboxConfig("global.smooth", smoothing_enabled->getState() ? "1" : "0");
                 RecalboxSystem::getInstance()->setRecalboxConfig("global.ratio", ratio_choice->getSelected());
