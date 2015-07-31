@@ -95,7 +95,7 @@ void Settings::setDefaults() {
     mStringMap["INPUT P2"] = "DEFAULT";
     mStringMap["INPUT P3"] = "DEFAULT";
     mStringMap["INPUT P4"] = "DEFAULT";
-    mStringMap["Overclock"] = "none";
+    mStringMap["Overclock"] = "none-rpi2";
     mStringMap["RecalboxSettingScript"] = "/recalbox/scripts/recalbox-config.sh";
     mStringMap["RecalboxConfigScript"] = "";
     mStringMap["LastVersionFile"] = "/root/update.done";
