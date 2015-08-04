@@ -124,6 +124,14 @@ GuiMenu::GuiMenu(Window *window) : GuiComponent(window), mMenu(window, "MAIN MEN
 
                  s->addWithLabel("LANGUAGE", language_choice);
 
+                 // Overclock choice
+                 auto overclock_choice = std::make_shared<OptionListComponent<std::string> >(window, "OVERCLOCK",
+                                                                                             false);
+                 std::string currentOverclock = Settings::getInstance()->getString("Overclock");
+                 overclock_choice->add("RPI2 (1050Mhz)", "rpi2", currentOverclock == "rpi2");
+                 overclock_choice->add("NONE (900Mhz)", "none-rpi2", currentOverclock == "none-rpi2");
+                 s->addWithLabel("OVERCLOCK", overclock_choice);
+
                  // Updates
                  {
                      ComponentListRow row;
@@ -202,9 +210,14 @@ GuiMenu::GuiMenu(Window *window) : GuiComponent(window), mMenu(window, "MAIN MEN
                  }
 
 
-                 s->addSaveFunc([window, language_choice, language] {
+                 s->addSaveFunc([overclock_choice, window, language_choice, language] {
                      bool reboot = false;
 
+                     if (Settings::getInstance()->getString("Overclock") != overclock_choice->getSelected()) {
+                         Settings::getInstance()->setString("Overclock", overclock_choice->getSelected());
+                         RecalboxSystem::getInstance()->setOverclock(overclock_choice->getSelected());
+                         reboot = true;
+                     }
                      if (language != language_choice->getSelected()) {
                          RecalboxSystem::getInstance()->setRecalboxConfig("system.language",
                                                                           language_choice->getSelected());
