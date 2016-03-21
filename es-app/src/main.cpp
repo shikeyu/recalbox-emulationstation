@@ -15,11 +15,21 @@
 #include "Log.h"
 #include "Window.h"
 #include "EmulationStation.h"
+#include "RecalboxSystem.h"
 #include "Settings.h"
 #include "ScraperCmdLine.h"
+#include "VolumeControl.h"
 #include <sstream>
 #include <boost/locale.hpp>
+#include "resources/Font.h"
+#include "NetworkThread.h"
+#include "RecalboxSystem.h"
 
+
+
+#ifdef WIN32
+#include <Windows.h>
+#endif
 
 namespace fs = boost::filesystem;
 
@@ -55,6 +65,7 @@ bool parseArgs(int argc, char* argv[], unsigned int* width, unsigned int* height
 		}else if(strcmp(argv[i], "--debug") == 0)
 		{
 			Settings::getInstance()->setBool("Debug", true);
+			Settings::getInstance()->setBool("HideConsole", false);
 			Log::setReportingLevel(LogDebug);
 		}else if(strcmp(argv[i], "--windowed") == 0)
 		{
@@ -69,6 +80,14 @@ bool parseArgs(int argc, char* argv[], unsigned int* width, unsigned int* height
 			scrape_cmdline = true;
 		}else if(strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0)
 		{
+#ifdef WIN32
+			// This is a bit of a hack, but otherwise output will go to nowhere
+			// when the application is compiled with the "WINDOWS" subsystem (which we usually are).
+			// If you're an experienced Windows programmer and know how to do this
+			// the right way, please submit a pull request!
+			AttachConsole(ATTACH_PARENT_PROCESS);
+			freopen("CONOUT$", "wb", stdout);
+#endif
 			std::cout << 
 				"EmulationStation, a graphical front-end for ROM browsing.\n"
 				"Written by Alec \"Aloshi\" Lofquist.\n"
@@ -79,10 +98,10 @@ bool parseArgs(int argc, char* argv[], unsigned int* width, unsigned int* height
 				"--ignore-gamelist		ignore the gamelist (useful for troubleshooting)\n"
 				"--draw-framerate		display the framerate\n"
 				"--no-exit			don't show the exit option in the menu\n"
-				"--debug				even more logging\n"
+				"--debug				more logging, show console on Windows\n"
 				"--scrape			scrape using command line interface\n"
 				"--windowed			not fullscreen, should be used with --resolution\n"
-				"--vsync [1/on or 0/off]	turn vsync on or off (default is on)\n"
+				"--vsync [1/on or 0/off]		turn vsync on or off (default is on)\n"
 				"--help, -h			summon a sentient, angry tuba\n\n"
 				"More information available in README.md.\n";
 			return false; //exit after printing help
@@ -127,10 +146,7 @@ bool loadSystemConfigFile(const char** errorString)
 	if(SystemData::sSystemVector.size() == 0)
 	{
 		LOG(LogError) << "No systems found! Does at least one system have a game present? (check that extensions match!)\n(Also, make sure you've updated your es_systems.cfg for XML!)";
-		*errorString = "WE CAN'T FIND ANY SYSTEMS!\n"
-			"CHECK THAT YOUR PATHS ARE CORRECT IN THE SYSTEMS CONFIGURATION FILE, "
-			"AND YOUR GAME DIRECTORY HAS AT LEAST ONE GAME WITH THE CORRECT EXTENSION.\n\n"
-			"VISIT EMULATIONSTATION.ORG FOR MORE INFORMATION.";
+		*errorString = "NOGAMEERRORMESSAGE";
 		return false;
 	}
 
@@ -145,13 +161,13 @@ void onExit()
 
 int setLocale(char * argv1)
 {
-	boost::locale::generator gen;
  	char path_save[PATH_MAX];
   	char abs_exe_path[PATH_MAX];
   	char *p;
 
-  	if(!(p = strrchr(argv1, '/')))
+    if(!(p = strrchr(argv1, '/'))) {
     		getcwd(abs_exe_path, sizeof(abs_exe_path));
+    }
   	else
   	{
     		*p = '\0';
@@ -160,6 +176,14 @@ int setLocale(char * argv1)
     		getcwd(abs_exe_path, sizeof(abs_exe_path));
     		chdir(path_save);
   	}
+	boost::locale::localization_backend_manager my = boost::locale::localization_backend_manager::global(); 
+	// Get global backend
+
+    	my.select("std"); 
+	boost::locale::localization_backend_manager::global(my);
+    	// set this backend globally
+
+    	boost::locale::generator gen;
 
 	std::string localeDir = abs_exe_path;
 	localeDir += "/locale/";
@@ -173,7 +197,7 @@ int setLocale(char * argv1)
     	std::locale::global(gen(""));
     	std::cout.imbue(std::locale());
         LOG(LogInfo) << "Locals set...";
-
+    return 0;
 }
 
 int main(int argc, char* argv[])
@@ -181,11 +205,44 @@ int main(int argc, char* argv[])
 	unsigned int width = 0;
 	unsigned int height = 0;
 
-	std::locale::global(boost::locale::generator().generate(""));
-	boost::filesystem::path::imbue(std::locale());
+	//std::locale::global(boost::locale::generator().generate(""));
+	//boost::filesystem::path::imbue(std::locale());
 
 	if(!parseArgs(argc, argv, &width, &height))
 		return 0;
+
+	// only show the console on Windows if HideConsole is false
+#ifdef WIN32
+	// MSVC has a "SubSystem" option, with two primary options: "WINDOWS" and "CONSOLE".
+	// In "WINDOWS" mode, no console is automatically created for us.  This is good, 
+	// because we can choose to only create the console window if the user explicitly 
+	// asks for it, preventing it from flashing open and then closing.
+	// In "CONSOLE" mode, a console is always automatically created for us before we
+	// enter main. In this case, we can only hide the console after the fact, which
+	// will leave a brief flash.
+	// TL;DR: You should compile ES under the "WINDOWS" subsystem.
+	// I have no idea how this works with non-MSVC compilers.
+	if(!Settings::getInstance()->getBool("HideConsole"))
+	{
+		// we want to show the console
+		// if we're compiled in "CONSOLE" mode, this is already done.
+		// if we're compiled in "WINDOWS" mode, no console is created for us automatically;
+		// the user asked for one, so make one and then hook stdin/stdout/sterr up to it
+		if(AllocConsole()) // should only pass in "WINDOWS" mode
+		{
+			freopen("CONIN$", "r", stdin);
+			freopen("CONOUT$", "wb", stdout);
+			freopen("CONOUT$", "wb", stderr);
+		}
+	}else{
+		// we want to hide the console
+		// if we're compiled with the "WINDOWS" subsystem, this is already done.
+		// if we're compiled with the "CONSOLE" subsystem, a console is already created; 
+		// it'll flash open, but we hide it nearly immediately
+		if(GetConsoleWindow()) // should only pass in "CONSOLE" mode
+			ShowWindow(GetConsoleWindow(), SW_HIDE);
+	}
+#endif
 
 	//if ~/.emulationstation doesn't exist and cannot be created, bail
 	if(!verifyHomeFolderExists())
@@ -201,13 +258,14 @@ int main(int argc, char* argv[])
 	// Set locale
 	setLocale(argv[0]);
 
+    Renderer::init(0, 0);
 	Window window;
 	ViewController::init(&window);
 	window.pushGui(ViewController::get());
 
 	if(!scrape_cmdline)
-	{
-		if(!window.init(width, height))
+    {
+        if(!window.init(width, height, false))
 		{
 			LOG(LogError) << "Window failed to initialize!";
 			return 1;
@@ -242,6 +300,31 @@ int main(int argc, char* argv[])
 			}));
 	}
 
+	// Recalbox config in settings for better performance
+	Settings::getInstance()->setBool("kodi.enabled", std::string("1").compare(RecalboxSystem::getInstance()->getRecalboxConfig("kodi.enabled")) == 0);
+	Settings::getInstance()->setBool("kodi.atstartup", std::string("1").compare(RecalboxSystem::getInstance()->getRecalboxConfig("kodi.atstartup")) == 0);
+	Settings::getInstance()->setBool("kodi.xbutton", std::string("1").compare(RecalboxSystem::getInstance()->getRecalboxConfig("kodi.xbutton")) == 0);
+	Settings::getInstance()->setBool("audio.bgmusic", std::string("1").compare(RecalboxSystem::getInstance()->getRecalboxConfig("audio.bgmusic")) == 0);
+
+
+	if(Settings::getInstance()->getBool("kodi.enabled") && Settings::getInstance()->getBool("kodi.atstartup")){
+		RecalboxSystem::getInstance()->launchKodi(&window);
+	}
+	RecalboxSystem::getInstance()->getIpAdress();
+	// UPDATED VERSION MESSAGE
+	if(RecalboxSystem::getInstance()->needToShowVersionMessage()){
+		 window.pushGui(new GuiMsgBox(&window,
+		RecalboxSystem::getInstance()->getVersionMessage(),
+		"OK", [] {
+						RecalboxSystem::getInstance()->versionMessageDisplayed();
+					},"",nullptr,"",nullptr, ALIGN_LEFT));
+	}
+
+	// UPDATE CHECK THREAD
+	if(std::string("1").compare(RecalboxSystem::getInstance()->getRecalboxConfig("updates.enabled")) == 0){
+		NetworkThread * nthread = new NetworkThread(&window);
+	}
+
 	//run the command line scraper then quit
 	if(scrape_cmdline)
 	{
@@ -250,7 +333,11 @@ int main(int argc, char* argv[])
 
 	//dont generate joystick events while we're loading (hopefully fixes "automatically started emulator" bug)
 	SDL_JoystickEventState(SDL_DISABLE);
-
+        
+        // Initialize audio manager
+        VolumeControl::getInstance()->init();
+        AudioManager::getInstance()->init();
+        
 	// preload what we can right away instead of waiting for the user to select it
 	// this makes for no delays when accessing content, but a longer startup time
 	ViewController::get()->preload();
